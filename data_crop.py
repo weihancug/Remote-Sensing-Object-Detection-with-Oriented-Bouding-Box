@@ -226,16 +226,3 @@ for idx, img in enumerate(images):
     box = format_label(txt_data)
     #设置图像的大小
     clip_image(img.strip('.png'), img_data, box, 1000, 1000)
-
-
-    
-    
-    
-
-
-
-
-
-
-
-
