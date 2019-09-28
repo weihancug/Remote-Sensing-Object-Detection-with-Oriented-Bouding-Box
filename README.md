@@ -8,3 +8,9 @@ Some object detection codes for DOTA dataset
 1 首先使用data_crop.py 讲dota数据集进行切分，可以训练的大小，例如1000x1000
 
 2 接下来使用create_data_list.py，创建一个训练集和测试集所有文件的json文件，用于模型读取
+
+3 模型训练： 两个参数，第一个是`interpreter options： -m torch.distributed.launch --nproc_per_node = 2`, 第二个是：`--skip-test --config-file config_path DATALOADER.2 OUTPUT_DIR output_path`
+
+```
+-m torch.distributed.launch --nproc_per_node = 2 python train_net.py --skip-test --config-file ../configs/fcos/oriented DATALOADER.2 OUTPUT_DIR output_path
+```
