@@ -1,21 +1,20 @@
 # -*- coding:utf-8 -*-
-#数据集分割代码
 import os
 import scipy.misc as misc
 from xml.dom.minidom import Document
 import numpy as np
 import copy, cv2
 
-#需要输入原始目录和最新的目录，同时标注的子文件夹是“images”，和“labelTxt”
-#如果不是需要修改
+
 raw_data = '/home/han/Desktop/DOTA/dataset/train/'
 save_dir = '/home/han/Desktop/DOTA/dataset_crop/train/'
-# DOTA 同时需要统计类别的list
+# raw_data = '/home/han/Desktop/DOTA/dataset/val/'
+# save_dir = '/home/han/Desktop/DOTA/dataset_crop/val/'
+# DOTA
 class_list = ['small-vehicle', 'plane', 'large-vehicle', 'ship', 'harbor', 'tennis-court',
                'ground-track-field', 'soccer-ball-field', 'baseball-diamond', 'swimming-pool', 'roundabout',
                'basketball-court', 'storage-tank', 'bridge', 'helicopter']
 
-#生成分割后数据集所在的目录
 if not os.path.exists(save_dir):
     os.mkdir(save_dir)
 if not os.path.exists(os.path.join(save_dir,'images')):
@@ -23,7 +22,6 @@ if not os.path.exists(os.path.join(save_dir,'images')):
 if not os.path.exists(os.path.join(save_dir,'labelTxt')):
     os.mkdir(os.path.join(save_dir,'labelTxt'))
 
-#保存成xml文件用的voc的格式
 def save_to_xml(save_path, im_height, im_width, objects_axis, label_name):
     im_depth = 0
     object_num = len(objects_axis)
@@ -79,7 +77,7 @@ def save_to_xml(save_path, im_height, im_width, objects_axis, label_name):
         objects = doc.createElement('object')
         annotation.appendChild(objects)
         object_name = doc.createElement('name')
-        object_name.appendChild(doc.createTextNode(label_name[int(objects_axis[i][-1])]))
+        object_name.appendChild(doc.createTextNode(label_name[int(objects_axis[i][8])]))
         objects.appendChild(object_name)
         pose = doc.createElement('pose')
         pose.appendChild(doc.createTextNode('Unspecified'))
@@ -88,7 +86,7 @@ def save_to_xml(save_path, im_height, im_width, objects_axis, label_name):
         truncated.appendChild(doc.createTextNode('1'))
         objects.appendChild(truncated)
         difficult = doc.createElement('difficult')
-        difficult.appendChild(doc.createTextNode('0'))
+        difficult.appendChild(doc.createTextNode(str((objects_axis[i][9]))))
         objects.appendChild(difficult)
         bndbox = doc.createElement('bndbox')
         objects.appendChild(bndbox)
@@ -132,8 +130,8 @@ def format_label(txt_list):
         if len(i.split(' ')) != 10:
             continue
         format_data.append(
-        [int(float(xy)) for xy in i.split(' ')[:8]] + [class_list.index(i.split(' ')[8])]
-        # {'x0': int(i.split(' ')[0]),
+            [int(float(xy)) for xy in i.split(' ')[:8]] + [class_list.index(i.split(' ')[8])] + [int(i.split(' ')[9])]
+            # {'x0': int(i.split(' ')[0]),
         # 'x1': int(i.split(' ')[2]),
         # 'x2': int(i.split(' ')[4]),
         # 'x3': int(i.split(' ')[6]),
@@ -167,6 +165,8 @@ def clip_image(file_idx, image, boxes_all, width, height):
                 top_left_col = max(start_w_new, 0)
                 bottom_right_row = min(start_h + height, shape[0])
                 bottom_right_col = min(start_w + width, shape[1])
+
+
                 subImage = image[top_left_row:bottom_right_row, top_left_col: bottom_right_col]
 
                 box[:, 0] = boxes[:, 0] - top_left_col
@@ -179,6 +179,7 @@ def clip_image(file_idx, image, boxes_all, width, height):
                 box[:, 5] = boxes[:, 5] - top_left_row
                 box[:, 7] = boxes[:, 7] - top_left_row
                 box[:, 8] = boxes[:, 8]
+                box[:, 9] = boxes[:, 9]
                 center_y = 0.25*(box[:, 1] + box[:, 3] + box[:, 5] + box[:, 7])
                 center_x = 0.25*(box[:, 0] + box[:, 2] + box[:, 4] + box[:, 6])
                 # print('center_y', center_y)
@@ -215,6 +216,7 @@ min_length = 1e10
 max_length = 1
 
 for idx, img in enumerate(images):
+# img = 'P1524.png'
     print (idx, 'read image', img)
     #img_data = misc.imread(os.path.join(raw_images_dir, img))
     img_data = cv2.imread(os.path.join(raw_images_dir, img))
@@ -224,5 +226,20 @@ for idx, img in enumerate(images):
                     'r').readlines()
 
     box = format_label(txt_data)
-    #设置图像的大小
     clip_image(img.strip('.png'), img_data, box, 1000, 1000)
+    
+
+    
+#     rm train/images/*   &&   rm train/labeltxt/*
+
+    
+    
+    
+
+
+
+
+
+
+
+
