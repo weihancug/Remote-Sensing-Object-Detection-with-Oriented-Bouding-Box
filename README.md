@@ -9,7 +9,8 @@ Some object detection codes for DOTA dataset
 
 2 接下来使用`create_data_list.py`，创建一个训练集和测试集所有文件的json文件，用于模型读取
 
-3 模型训练： 两个参数，第一个是`interpreter options： -m torch.distributed.launch --nproc_per_node = 2`, 第二个是：`--skip-test --config-file config_path DATALOADER.2 OUTPUT_DIR output_path`
+3 模型训练： 两个参数，第一个是`interpreter options： -m torch.distributed.launch --nproc_per_node = 2`
+                     第二个是：`--skip-test --config-file config_path DATALOADER.2 OUTPUT_DIR output_path`
 
 ```
 -m torch.distributed.launch --nproc_per_node = 2 python train_net.py --skip-test --config-file ../configs/fcos/orientedfcos_R50_1x.yaml DATALOADER.2 OUTPUT_DIR ../training_dir/orientedfcos_R_50_FPN_1x
