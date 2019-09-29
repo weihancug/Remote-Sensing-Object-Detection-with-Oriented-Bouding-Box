@@ -15,3 +15,4 @@ Some object detection codes for DOTA dataset
 ```
 -m torch.distributed.launch --nproc_per_node = 2 python train_net.py --skip-test --config-file ../configs/fcos/orientedfcos_R50_1x.yaml DATALOADER.2 OUTPUT_DIR ../training_dir/orientedfcos_R_50_FPN_1x
 ```
+4 模型测试：
